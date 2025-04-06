@@ -1,27 +1,49 @@
-import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { Component } from '@angular/core';
+import { Pais } from '../../models/pais.model';
+import { PaisService } from '../../services/pais.service';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-home',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
 
-  authService: AuthService = inject(AuthService);
-  router: Router = inject(Router);
+  paises: any;
+  pais: Pais = new Pais();
 
-  salir() {
-    this.authService.logout().subscribe({
-      next: () => {
-        this.router.navigateByUrl('');
-      },
-      error: (error) => {
-        console.error('Error: ',error);
-      }
-    })
+  constructor(private paisService: PaisService) {
+    this.getPaises();
   }
 
+  async getPaises(): Promise<void> {
+    this.paises = await firstValueFrom(this.paisService.getPaises());
+  }
+
+  insertarPais(): void {
+    this.paisService.agregarPais(this.pais);
+    this.getPaises();
+    this.pais = new Pais();
+  }
+
+  selectPais(paisSeleccionado: Pais): void {
+    this.pais = { ...paisSeleccionado };
+  }
+
+  updatePais(): void {
+    this.paisService.modificarPais(this.pais);
+    this.pais = new Pais();
+    this.getPaises();
+  }
+
+  deletePais(): void {
+    this.paisService.eliminarPais(this.pais);
+    this.pais = new Pais();
+    this.getPaises();
+  }
 }

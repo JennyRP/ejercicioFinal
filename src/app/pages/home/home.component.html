@@ -1,10 +1,49 @@
-<div style="margin: 20px;">
-    <h1>Home</h1>
-
-    <p>Bienvenido</p>
-
-    <p>
-        <button type="button" class="btn btn-success"
-            (click)="salir()">Cerrar Sesión</button>
-    </p>
-</div>
+<div class="container">
+    <h1>🌍 Administración de Países</h1>
+  
+    <form (ngSubmit)="pais.id ? updatePais() : insertarPais()" class="formulario">
+      <input [(ngModel)]="pais.nombre" name="nombre" placeholder="Nombre del país" required>
+      <input [(ngModel)]="pais.descripcion" name="descripcion" placeholder="Descripción">
+      <input [(ngModel)]="pais.capital" name="capital" placeholder="Capital">
+      <input [(ngModel)]="pais.continente" name="continente" placeholder="Continente">
+      <input [(ngModel)]="pais.moneda" name="moneda" placeholder="Moneda">
+      <input [(ngModel)]="pais.poblacion" type="number" name="poblacion" placeholder="Población">
+      <input [(ngModel)]="pais.clima" name="clima" placeholder="Clima">
+      
+      <label class="checkbox-label">
+        <input [(ngModel)]="pais.esPaisMiembroONU" name="esPaisMiembroONU" type="checkbox">
+        Miembro de la ONU
+      </label>
+  
+      <button type="submit">{{ pais.id ? 'Actualizar' : 'Agregar' }} País</button>
+      <button type="button" (click)="deletePais()" [disabled]="!pais.id">Eliminar</button>
+    </form>
+  
+    <div class="tabla">
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Capital</th>
+            <th>Continente</th>
+            <th>Moneda</th>
+            <th>Población</th>
+            <th>ONU</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of paises" (click)="selectPais(p)" class="fila-hover">
+            <td>{{ p.nombre }}</td>
+            <td>{{ p.capital }}</td>
+            <td>{{ p.continente }}</td>
+            <td>{{ p.moneda }}</td>
+            <td>{{ p.poblacion }}</td>
+            <td>{{ p.esPaisMiembroONU ? '✅' : '❌' }}</td>
+            <td><button (click)="selectPais(p)">✏️</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  

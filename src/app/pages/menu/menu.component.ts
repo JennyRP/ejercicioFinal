@@ -1,14 +1,15 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common'; // Importa CommonModule
 
 @Component({
   selector: 'app-menu',
   templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.css']
+  styleUrls: ['./menu.component.css'],
+  imports: [CommonModule, RouterLink] // Agrega CommonModule a los imports
 })
 export class MenuComponent {
   estaLogueado$: Observable<boolean>;

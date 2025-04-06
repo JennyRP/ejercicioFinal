@@ -1,0 +1,96 @@
+.container {
+    padding: 2rem;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
+    border-radius: 15px;
+    margin: 2rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+  }
+  
+  .formulario {
+    display: grid;
+    gap: 0.8rem;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    margin-bottom: 2rem;
+  }
+  
+  input[type="text"],
+  input[type="number"] {
+    padding: 0.5rem;
+    border: none;
+    border-radius: 10px;
+    outline: none;
+    font-size: 1rem;
+  }
+  
+  .checkbox-label {
+    grid-column: span 2;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: bold;
+  }
+  
+  button {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+    background-color: #ffca28;
+    color: #1e3c72;
+  }
+  
+  button:hover {
+    background-color: #ffc107;
+    transform: scale(1.05);
+  }
+  
+  button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .tabla {
+    overflow-x: auto;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    color: #333;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  th, td {
+    padding: 0.8rem;
+    text-align: left;
+  }
+  
+  thead {
+    background-color: #1e3c72;
+    color: white;
+  }
+  
+  .fila-hover:hover {
+    background-color: #f0f0f0;
+    cursor: pointer;
+  }
+  
+  td button {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+  
