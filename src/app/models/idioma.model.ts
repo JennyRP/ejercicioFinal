@@ -1,4 +1,4 @@
-// src/app/models/idioma.model.ts
+
 export class Idioma {
     id!: string;
     nombre!: string;

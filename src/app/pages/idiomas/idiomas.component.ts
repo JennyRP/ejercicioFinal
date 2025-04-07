@@ -1,4 +1,4 @@
-// src/app/pages/idiomas/idiomas.component.ts
+
 import { Component } from '@angular/core';
 import { Idioma } from '../../models/idioma.model';
 import { IdiomaService } from '../../services/idioma.service';
@@ -12,7 +12,7 @@ import { PaisService } from '../../services/pais.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './idiomas.component.html',
-  styleUrl: './idiomas.component.css'
+  styleUrls: ['./idiomas.component.css']
 })
 export class IdiomasComponent {
   idiomas: any;
