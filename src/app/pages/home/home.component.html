@@ -5,39 +5,42 @@
     {{ mensajeError }}
   </div>
 
-  <form (ngSubmit)="guardarPais()" class="form-pais">
+  <form [formGroup]="paisForm" (ngSubmit)="guardarPais()" class="form-pais">
     <div class="form-group">
       <label>Nombre del país</label>
-      <input [(ngModel)]="paisActual.nombre" name="nombre" class="form-control" required>
+      <input formControlName="nombre" class="form-control" required>
+      <div *ngIf="paisForm.controls['nombre'].invalid && (paisForm.controls['nombre'].dirty || paisForm.controls['nombre'].touched)">
+        <small class="error">El nombre del país es requerido.</small>
+      </div>
     </div>
 
     <div class="form-group">
       <label>Capital</label>
-      <input [(ngModel)]="paisActual.capital" name="capital" class="form-control">
+      <input formControlName="capital" class="form-control">
     </div>
 
     <div class="form-group">
       <label>Continente</label>
-      <input [(ngModel)]="paisActual.continente" name="continente" class="form-control">
+      <input formControlName="continente" class="form-control">
     </div>
 
     <div class="form-group">
       <label>Moneda</label>
-      <input [(ngModel)]="paisActual.moneda" name="moneda" class="form-control">
+      <input formControlName="moneda" class="form-control">
     </div>
 
     <div class="form-group">
       <label>Población</label>
-      <input [(ngModel)]="paisActual.poblacion" type="number" name="poblacion" class="form-control">
+      <input formControlName="poblacion" type="number" class="form-control">
     </div>
 
     <div class="form-group">
       <label>Clima</label>
-      <input [(ngModel)]="paisActual.clima" name="clima" class="form-control">
+      <input formControlName="clima" class="form-control">
     </div>
 
     <div class="form-check">
-      <input [(ngModel)]="paisActual.esPaisMiembroONU" type="checkbox" name="esPaisMiembroONU" class="form-check-input">
+      <input formControlName="esPaisMiembroONU" type="checkbox" class="form-check-input">
       <label class="form-check-label">Miembro de la ONU</label>
     </div>
 
@@ -45,8 +48,8 @@
       <label>Idiomas hablados:</label>
       <div class="idiomas-container">
         <div *ngFor="let idioma of idiomasDisponibles" class="idioma-checkbox">
-          <input 
-            type="checkbox" 
+          <input
+            type="checkbox"
             [id]="'idioma-' + idioma.id"
             [checked]="idiomaEstaSeleccionado(idioma.id!)"
             (change)="toggleIdiomaSeleccionado(idioma.id!)">
@@ -59,8 +62,8 @@
       <button type="submit" class="btn btn-primary">
         {{ modoEdicion ? 'Actualizar' : 'Agregar' }} País
       </button>
-      <button type="button" (click)="eliminarPais(paisActual.id!)" 
-              [disabled]="!paisActual.id" class="btn btn-danger">
+      <button type="button" (click)="eliminarPais(paisForm.value.id!)"
+        [disabled]="!paisForm.value.id" class="btn btn-danger">
         Eliminar
       </button>
       <button type="button" (click)="resetForm()" class="btn btn-secondary">

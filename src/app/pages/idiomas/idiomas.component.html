@@ -1,45 +1,52 @@
-
 <div class="container">
-    <h1>🗣️ Administración de Idiomas</h1>
-  
-    <form (ngSubmit)="idioma.id ? updateIdioma() : insertarIdioma()" class="formulario">
-      <input [(ngModel)]="idioma.nombre" name="nombre" placeholder="Nombre del idioma" required>
-      <input [(ngModel)]="idioma.codigoISO" name="codigoISO" placeholder="Código ISO" required>
-      <input [(ngModel)]="idioma.numeroHablantes" type="number" name="numeroHablantes" placeholder="Número de hablantes">
-      
-      <select [(ngModel)]="idioma.paisesHablantes" name="paisesHablantes" multiple>
-        <option *ngFor="let pais of paises" [value]="pais.id">{{pais.nombre}}</option>
-      </select>
-  
-      <label class="checkbox-label">
-        <input [(ngModel)]="idioma.esOficialONU" name="esOficialONU" type="checkbox">
-        Idioma oficial de la ONU
-      </label>
-  
-      <button type="submit">{{ idioma.id ? 'Actualizar' : 'Agregar' }} Idioma</button>
-      <button type="button" (click)="deleteIdioma()" [disabled]="!idioma.id">Eliminar</button>
-    </form>
-  
-    <div class="tabla">
-      <table>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Código ISO</th>
-            <th>Hablantes</th>
-            <th>ONU</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let i of idiomas" (click)="selectIdioma(i)" class="fila-hover">
-            <td>{{ i.nombre }}</td>
-            <td>{{ i.codigoISO }}</td>
-            <td>{{ i.numeroHablantes }}</td>
-            <td>{{ i.esOficialONU ? '✅' : '❌' }}</td>
-            <td><button (click)="selectIdioma(i)">✏️</button></td>
-          </tr>
-        </tbody>
-      </table>
+  <h1>🗣️ Administración de Idiomas</h1>
+
+  <form [formGroup]="idiomaForm" (ngSubmit)="idiomaForm.value.id ? actualizarIdioma() : insertarIdioma()" class="formulario">
+    <input formControlName="nombre" placeholder="Nombre del idioma" required>
+    <div *ngIf="idiomaForm.controls['nombre'].invalid && (idiomaForm.controls['nombre'].dirty || idiomaForm.controls['nombre'].touched)">
+      <small class="error">El nombre del idioma es requerido.</small>
     </div>
+
+    <input formControlName="codigoISO" placeholder="Código ISO" required>
+    <div *ngIf="idiomaForm.controls['codigoISO'].invalid && (idiomaForm.controls['codigoISO'].dirty || idiomaForm.controls['codigoISO'].touched)">
+      <small class="error">El código ISO es requerido.</small>
+    </div>
+
+    <input formControlName="numeroHablantes" type="number" placeholder="Número de hablantes">
+
+    <select formControlName="paisesHablantes" multiple>
+      <option *ngFor="let pais of paises" [value]="pais.id">{{pais.nombre}}</option>
+    </select>
+
+    <label class="checkbox-label">
+      <input formControlName="esOficialONU" type="checkbox">
+      Idioma oficial de la ONU
+    </label>
+
+    <button type="submit">{{ idiomaForm.value.id ? 'Actualizar' : 'Agregar' }} Idioma</button>
+    <button type="button" (click)="eliminarIdioma()" [disabled]="!idiomaForm.value.id">Eliminar</button>
+  </form>
+
+  <div class="tabla">
+    <table>
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Código ISO</th>
+          <th>Hablantes</th>
+          <th>ONU</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let i of idiomas" (click)="seleccionarIdioma(i)" class="fila-hover">
+          <td>{{ i.nombre }}</td>
+          <td>{{ i.codigoISO }}</td>
+          <td>{{ i.numeroHablantes }}</td>
+          <td>{{ i.esOficialONU ? '✅' : '❌' }}</td>
+          <td><button (click)="seleccionarIdioma(i)">✏️</button></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
+</div>

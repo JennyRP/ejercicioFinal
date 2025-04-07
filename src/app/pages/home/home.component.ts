@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Pais, createEmptyPais } from '../../models/pais.model';
 import { PaisService } from '../../services/pais.service';
 import { IdiomaService } from '../../services/idioma.service';
@@ -9,22 +9,36 @@ import { Idioma } from '../../models/idioma.model';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   paises: Pais[] = [];
   idiomasDisponibles: Idioma[] = [];
-  paisActual: Pais = createEmptyPais();
+  paisForm: FormGroup; // Usamos FormGroup
   idiomasSeleccionados: string[] = [];
   modoEdicion = false;
   mensajeError = '';
 
   constructor(
     private paisService: PaisService,
-    private idiomaService: IdiomaService
+    private idiomaService: IdiomaService,
+    private fb: FormBuilder // Inyectamos FormBuilder
   ) {
+    this.paisForm = this.fb.group({ // Inicializamos el formulario
+      id: [''],
+      nombre: ['', Validators.required],
+      capital: [''],
+      continente: [''],
+      moneda: [''],
+      poblacion: [''],
+      clima: [''],
+      esPaisMiembroONU: [false]
+    });
+  }
+
+  ngOnInit(): void {
     this.cargarPaises();
     this.cargarIdiomas();
   }
@@ -44,40 +58,41 @@ export class HomeComponent {
   }
 
   async guardarPais(): Promise<void> {
-    try {
-      if (!this.paisActual.nombre) {
-        this.mostrarError('El nombre es requerido');
-        return;
+    if (this.paisForm.valid) {
+      const paisData = this.paisForm.value;
+      paisData.idiomas = this.idiomasSeleccionados; // Asignamos idiomas seleccionados
+
+      try {
+        if (this.modoEdicion && paisData.id) {
+          await this.paisService.actualizarPais(paisData);
+        } else {
+          await this.paisService.agregarPais(paisData);
+        }
+        this.resetForm();
+        this.cargarPaises();
+      } catch (error) {
+        this.mostrarError('Error al guardar: ' + (error as Error).message);
       }
-
-      // Asignar los idiomas seleccionados al país
-      this.paisActual.idiomas = this.idiomasSeleccionados;
-
-      if (this.modoEdicion && this.paisActual.id) {
-        await this.paisService.actualizarPais(this.paisActual);
-      } else {
-        await this.paisService.agregarPais(this.paisActual);
-      }
-
-      this.resetForm();
-      this.cargarPaises();
-    } catch (error) {
-      this.mostrarError('Error al guardar: ' + (error as Error).message);
+    } else {
+      this.mostrarError('Por favor, completa el nombre del país.');
     }
   }
 
   editarPais(pais: Pais): void {
-    this.paisActual = { ...pais };
-    this.idiomasSeleccionados = [...pais.idiomas];
     this.modoEdicion = true;
+    this.paisForm.patchValue(pais);
+    this.idiomasSeleccionados = pais.idiomas ? [...pais.idiomas] : [];
   }
 
   async eliminarPais(id: string): Promise<void> {
-    try {
-      await this.paisService.eliminarPais(id);
-      this.cargarPaises();
-    } catch (error) {
-      this.mostrarError('Error al eliminar: ' + (error as Error).message);
+    if (confirm('¿Estás seguro de que deseas eliminar este país?')) {
+      try {
+        await this.paisService.eliminarPais(id);
+        this.cargarPaises();
+        this.resetForm();
+      } catch (error) {
+        this.mostrarError('Error al eliminar: ' + (error as Error).message);
+      }
     }
   }
 
@@ -100,9 +115,9 @@ export class HomeComponent {
   }
 
   resetForm(): void {
-    this.paisActual = createEmptyPais();
-    this.idiomasSeleccionados = [];
     this.modoEdicion = false;
+    this.paisForm.reset();
+    this.idiomasSeleccionados = [];
     this.mensajeError = '';
   }
 
