@@ -1,58 +1,59 @@
 import { Injectable, inject } from '@angular/core';
+import { 
+  Firestore, 
+  collection, 
+  collectionData, 
+  addDoc, 
+  doc, 
+  updateDoc, 
+  deleteDoc,
+  arrayUnion,
+  arrayRemove 
+} from '@angular/fire/firestore';
+import { Observable } from 'rxjs';
 import { Pais } from '../models/pais.model';
-import { Firestore, collection, collectionData, addDoc, doc, updateDoc, deleteDoc } from '@angular/fire/firestore';
-import { first } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PaisService {
+  private firestore: Firestore = inject(Firestore);
 
-  private db: Firestore = inject(Firestore);
-
-  constructor() {}
-
-  // Obtener todos los países
-  getPaises() {
-    const paisesCollection = collection(this.db, 'paises');
-    return collectionData(paisesCollection, { idField: 'id' })
-      .pipe(first());
+  getPaises(): Observable<Pais[]> {
+    const paisesRef = collection(this.firestore, 'paises');
+    return collectionData(paisesRef, { idField: 'id' }) as Observable<Pais[]>;
   }
 
-  // Agregar un nuevo país
-  agregarPais(pais: Pais) {
-    const paisesCollection = collection(this.db, 'paises');
-    const paisData = {
-      nombre: pais.nombre,
-      descripcion: pais.descripcion,
-      capital: pais.capital,
-      continente: pais.continente,
-      moneda: pais.moneda,
-      poblacion: pais.poblacion,
-      clima: pais.clima,
-      esPaisMiembroONU: pais.esPaisMiembroONU
-    };
-    addDoc(paisesCollection, paisData);
+  async agregarPais(pais: Pais): Promise<string> {
+    const paisesRef = collection(this.firestore, 'paises');
+    const docRef = await addDoc(paisesRef, pais);
+    return docRef.id;
   }
 
-  // Modificar un país existente
-  modificarPais(pais: Pais) {
-    const paisDocRef = doc(this.db, 'paises', pais.id);
-    updateDoc(paisDocRef, {
-      nombre: pais.nombre,
-      descripcion: pais.descripcion,
-      capital: pais.capital,
-      continente: pais.continente,
-      moneda: pais.moneda,
-      poblacion: pais.poblacion,
-      clima: pais.clima,
-      esPaisMiembroONU: pais.esPaisMiembroONU
-    });
+  async actualizarPais(pais: Pais): Promise<void> {
+    if (!pais.id) throw new Error('ID de país no proporcionado');
+    const paisRef = doc(this.firestore, 'paises', pais.id);
+    await updateDoc(paisRef, { ...pais });
   }
 
-  // Eliminar un país
-  eliminarPais(pais: Pais) {
-    const paisDocRef = doc(this.db, 'paises', pais.id);
-    deleteDoc(paisDocRef);
+  async eliminarPais(id: string): Promise<void> {
+    const paisRef = doc(this.firestore, 'paises', id);
+    await deleteDoc(paisRef);
   }
+
+  // ... (código anterior se mantiene igual)
+
+async agregarIdiomaAPais(paisId: string, idiomaId: string): Promise<void> {
+  const paisRef = doc(this.firestore, 'paises', paisId);
+  await updateDoc(paisRef, {
+    idiomas: arrayUnion(idiomaId)
+  });
+}
+
+async removerIdiomaDePais(paisId: string, idiomaId: string): Promise<void> {
+  const paisRef = doc(this.firestore, 'paises', paisId);
+  await updateDoc(paisRef, {
+    idiomas: arrayRemove(idiomaId)
+  });
+}
 }

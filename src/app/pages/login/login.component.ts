@@ -35,7 +35,7 @@ export class LoginComponent {
     const rawForm = this.form.getRawValue();
     this.authService.login(rawForm.email, rawForm.password).subscribe({
       next: ()=> {
-        this.router.navigateByUrl('/home');
+        this.router.navigate(['home']);
       },
       error: (error) => {
         this.error = true;

@@ -16,7 +16,8 @@ export const routes: Routes = [
     },
     {
         path: 'idiomas',
-        component: IdiomasComponent
+        component: IdiomasComponent,
+        canActivate: [authGuard]
     },
     {
         path: '**',

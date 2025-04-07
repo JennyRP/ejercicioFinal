@@ -1,49 +1,103 @@
 <div class="container">
-    <h1>🌍 Administración de Países</h1>
-  
-    <form (ngSubmit)="pais.id ? updatePais() : insertarPais()" class="formulario">
-      <input [(ngModel)]="pais.nombre" name="nombre" placeholder="Nombre del país" required>
-      <input [(ngModel)]="pais.descripcion" name="descripcion" placeholder="Descripción">
-      <input [(ngModel)]="pais.capital" name="capital" placeholder="Capital">
-      <input [(ngModel)]="pais.continente" name="continente" placeholder="Continente">
-      <input [(ngModel)]="pais.moneda" name="moneda" placeholder="Moneda">
-      <input [(ngModel)]="pais.poblacion" type="number" name="poblacion" placeholder="Población">
-      <input [(ngModel)]="pais.clima" name="clima" placeholder="Clima">
-      
-      <label class="checkbox-label">
-        <input [(ngModel)]="pais.esPaisMiembroONU" name="esPaisMiembroONU" type="checkbox">
-        Miembro de la ONU
-      </label>
-  
-      <button type="submit">{{ pais.id ? 'Actualizar' : 'Agregar' }} País</button>
-      <button type="button" (click)="deletePais()" [disabled]="!pais.id">Eliminar</button>
-    </form>
-  
-    <div class="tabla">
-      <table>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Capital</th>
-            <th>Continente</th>
-            <th>Moneda</th>
-            <th>Población</th>
-            <th>ONU</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let p of paises" (click)="selectPais(p)" class="fila-hover">
-            <td>{{ p.nombre }}</td>
-            <td>{{ p.capital }}</td>
-            <td>{{ p.continente }}</td>
-            <td>{{ p.moneda }}</td>
-            <td>{{ p.poblacion }}</td>
-            <td>{{ p.esPaisMiembroONU ? '✅' : '❌' }}</td>
-            <td><button (click)="selectPais(p)">✏️</button></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <h1>🌍 Administración de Países</h1>
+
+  <div *ngIf="mensajeError" class="alert alert-error">
+    {{ mensajeError }}
   </div>
-  
+
+  <form (ngSubmit)="guardarPais()" class="form-pais">
+    <div class="form-group">
+      <label>Nombre del país</label>
+      <input [(ngModel)]="paisActual.nombre" name="nombre" class="form-control" required>
+    </div>
+
+    <div class="form-group">
+      <label>Capital</label>
+      <input [(ngModel)]="paisActual.capital" name="capital" class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label>Continente</label>
+      <input [(ngModel)]="paisActual.continente" name="continente" class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label>Moneda</label>
+      <input [(ngModel)]="paisActual.moneda" name="moneda" class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label>Población</label>
+      <input [(ngModel)]="paisActual.poblacion" type="number" name="poblacion" class="form-control">
+    </div>
+
+    <div class="form-group">
+      <label>Clima</label>
+      <input [(ngModel)]="paisActual.clima" name="clima" class="form-control">
+    </div>
+
+    <div class="form-check">
+      <input [(ngModel)]="paisActual.esPaisMiembroONU" type="checkbox" name="esPaisMiembroONU" class="form-check-input">
+      <label class="form-check-label">Miembro de la ONU</label>
+    </div>
+
+    <div class="form-group">
+      <label>Idiomas hablados:</label>
+      <div class="idiomas-container">
+        <div *ngFor="let idioma of idiomasDisponibles" class="idioma-checkbox">
+          <input 
+            type="checkbox" 
+            [id]="'idioma-' + idioma.id"
+            [checked]="idiomaEstaSeleccionado(idioma.id!)"
+            (change)="toggleIdiomaSeleccionado(idioma.id!)">
+          <label [for]="'idioma-' + idioma.id">{{ idioma.nombre }}</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">
+        {{ modoEdicion ? 'Actualizar' : 'Agregar' }} País
+      </button>
+      <button type="button" (click)="eliminarPais(paisActual.id!)" 
+              [disabled]="!paisActual.id" class="btn btn-danger">
+        Eliminar
+      </button>
+      <button type="button" (click)="resetForm()" class="btn btn-secondary">
+        Limpiar
+      </button>
+    </div>
+  </form>
+
+  <div class="paises-list">
+    <h2>Listado de Países</h2>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Capital</th>
+          <th>Continente</th>
+          <th>Idiomas</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let pais of paises">
+          <td>{{ pais.nombre }}</td>
+          <td>{{ pais.capital }}</td>
+          <td>{{ pais.continente }}</td>
+          <td>
+            <span *ngFor="let idiomaId of pais.idiomas" class="badge">
+              {{ obtenerNombreIdioma(idiomaId) }}
+            </span>
+          </td>
+          <td>
+            <button (click)="editarPais(pais)" class="btn btn-sm btn-warning">
+              Editar
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
